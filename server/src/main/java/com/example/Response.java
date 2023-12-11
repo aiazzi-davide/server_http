@@ -75,7 +75,7 @@ public class Response {
     public void fileNotFound(){
         try {
                 out.writeBytes("HTTP/1.1 404 Not Found\n");
-                out.writeBytes("Date: " + date.toString() + "\n");
+                out.writeBytes("Date: " + LocalDateTime.now() + "\n");
                 out.writeBytes("content-length: 26\n");
                 out.writeBytes("Server: meucci-server\n");
                 out.writeBytes("Content-Type: text/plain; charset=UTF-8\n");
