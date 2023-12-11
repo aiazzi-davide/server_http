@@ -2,6 +2,7 @@ package com.example;
 
 import java.io.*;
 import java.net.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class Response {
@@ -49,8 +50,15 @@ public class Response {
         parts = message.split(" ");
 
         try {
-            File file = new File("server/src/main/java/com/example" + parts[1]);
+            File file = new File(parts[1].substring(1));
+            System.out.println(file.getPath());
             Scanner MyReader = new Scanner(file);
+            out.writeBytes("HTTP/1.1 200 OK\n");
+            out.writeBytes("Date: " + LocalDateTime.now() + "\n");
+            out.writeBytes("content-length: " + file.length() + "\n");
+            out.writeBytes("Server: meucci-server\n");
+            out.writeBytes("Content-Type: text/plain; charset=UTF-8\n");
+            out.writeBytes("\n");            
             while (MyReader.hasNextLine()) {
                 out.writeBytes(MyReader.nextLine());
             }
