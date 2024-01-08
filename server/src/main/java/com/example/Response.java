@@ -24,7 +24,7 @@ public class Response {
             e.printStackTrace();
         }
     }
-    public void recive(){
+    public void recieve(){
         try {
             //init
             client = server.accept();
@@ -58,12 +58,14 @@ public class Response {
 
         try {
             File file = new File("server/htdocs"+parts[1]);
+            if(!findFile(file.getPath())){
+                fileNotFound();
+                return;
+            }
             System.out.println(parts[1]);
             System.out.println(file.getPath());
             sendBinaryFile(out, file);
             client.close();
-        } catch (FileNotFoundException e) {
-            fileNotFound();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -7,7 +7,7 @@ public class Main {
         ThreadConsole console = new ThreadConsole();
         console.start();
         while (true) {
-            response.recive();
+            response.recieve();
         }
     }
 }
