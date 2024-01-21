@@ -1,9 +1,13 @@
 package com.example;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.*;
 import java.time.LocalDateTime;
 import java.util.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public class Response {
     ServerSocket server;
@@ -11,10 +15,14 @@ public class Response {
     DataOutputStream out;
     BufferedReader in;
     String[] parts;
-    Date date = new Date();
+    Date date = new Date(2000, 1, 1);
     String readLine;
     String firstLine;
-    String contentType = "text/html; ";
+
+    Alunno a1 = new Alunno("Mario", "Rossi", date);
+    Alunno a2 = new Alunno("Luigi", "Verdi", date);
+    ArrayList<Alunno> alunni = new ArrayList<>(Arrays.asList(a1, a2));
+    Classe classe = new Classe(1, "A", "Aula 1", alunni);
 
     public Response(int port) {
         try {
@@ -57,7 +65,10 @@ public class Response {
         parts = message.split(" ");
 
         try {
-            File file = new File("server/htdocs"+parts[1]);
+            File file = new File("server/htdocs" + parts[1]);
+            if (parts[1].contains(".json")) {
+                JsonMapper(classe);
+            }
             if(!findFile(file.getPath())){
                 fileNotFound();
                 return;
@@ -71,6 +82,7 @@ public class Response {
         }
         
     }
+    
     public boolean findFile(String path){
         File file = new File(path);
         return file.isFile();
@@ -110,12 +122,13 @@ public class Response {
         }
         return "text/plain; ";
     }
+
     public void sendBinaryFile(DataOutputStream out, File file) throws IOException {
         out.writeBytes("HTTP/1.1 200 OK\n");
         out.writeBytes("Date: " + LocalDateTime.now() + "\n");
         out.writeBytes("content-length: " + file.length() + "\n");
         out.writeBytes("Server: meucci-server\n");
-        out.writeBytes("Content-Type: " + getContentType(file) +"charset=UTF-8\n");
+        out.writeBytes("Content-Type: " + getContentType(file) + "charset=UTF-8\n");
         out.writeBytes("\n");
         InputStream In = new FileInputStream(file);
         byte[] buffer = new byte[8192];
@@ -124,5 +137,20 @@ public class Response {
             out.write(buffer, 0, n);
         }
         //in.close();
+    }
+
+    public void JsonMapper(Classe obj) {
+        String s1;
+        try {
+            System.out.println("Serializing list...");
+            ObjectMapper Mapper = new ObjectMapper();
+            s1 = Mapper.writeValueAsString(obj);
+            Mapper.writeValue(new File("server/htdocs/Classe.json"), obj);
+            System.out.println("list serialized: " + s1);
+            //return s1;
+        } catch (Exception i) {
+            i.printStackTrace();
+        }
+        //return "error";
     }
 }
